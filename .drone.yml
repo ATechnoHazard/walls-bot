@@ -16,7 +16,7 @@ steps:
     - ci/ssh_key.enc:ci_ssh_key
 
 - name: deploy
-  image: msfjarvis/docker-openssh
+  image: msfjarvis/drone-ssh-deploy
   settings:
     commands:
     - git -C walls-bot rev-parse --short HEAD
