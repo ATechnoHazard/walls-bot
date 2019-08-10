@@ -7,6 +7,14 @@ platform:
   arch: amd64
 
 steps:
+- name: export-keys
+  image: msfjarvis/drone-decrypt-files:latest
+  settings:
+    decrypt_key:
+      from_secret: decryption_key
+    file_to_path_mapping:
+    - ci/ssh_key.enc:ci_ssh_key
+
 - name: build_jdk_8
   image: msfjarvis/docker-zulu-jdk:alpine-jdk-8
   commands:
@@ -21,5 +29,15 @@ steps:
   image: msfjarvis/docker-zulu-jdk:alpine-jdk-12
   commands:
   - ./gradlew build
+
+- name: deploy
+  image: msfjarvis/docker-openssh
+  settings:
+    commands:
+    - git -C walls-bot rev-parse --short HEAD
+    - git -C walls-bot-2 rev-parse --short HEAD
+    remote_path:
+      from_secret: deploy_server_url
+    ssh_key: ci_ssh_key
 
 ...
